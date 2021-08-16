@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.background) {
 //                    Greeting("Android")
 //                    Container()
-                    VerticalContainer()
+                    BoxContainer()
                 }
             }
         }
@@ -70,6 +70,43 @@ fun Container(){
 }
 
 
+// 박스는 겹칠수 있다.
+// 기존 relative layout, constriant layout, framelayout 과 같이 뷰 겹치기가 가능
+// 아래로 내려갈수록 위에 뷰를 올리는 방식
+
+// alignment는 row, column 보다 다양하게 지원
+
+// Alignment.BottomCenter : 컨테이너의 중앙 아래
+// Alignment.BottomEnd : 컨테이너의 아래 오른쪽
+// Alignment.BottomStart : 컨테이너의 아래 왼쪽
+
+// Alignment.Center : 컨테이너의 정중앙
+// Alignment.CenterStart : 컨테이너의 중앙 왼쪽
+// Alignment.CenterEnd : 컨테이너의 중앙 오른쪽
+
+// Alignment.TopCenter : 컨테이너의 위 중앙
+// Alignment.TopEnd : 컨테이너의 위 오른쪽
+// Alignment.TopStart : 컨테이너의 위 왼쪽
+
+// propagateMinConstraints 해당 옵션을 true로 하면
+// 박스 안에 있는 제일 작은 크기의 뷰를 컨테이너 박스의 크기 만큼 컨스트레인트를 겁니다.
+
+@Composable
+fun BoxContainer(){
+    Box(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center,
+        propagateMinConstraints = false
+    ) {
+        DummyBox(modifier = Modifier.size(200.dp), color = Color.Green)
+        DummyBox(modifier = Modifier.size(150.dp), color = Color.Yellow)
+        DummyBox(color = Color.Blue)
+    }
+}
+
+
 @Composable
 fun VerticalContainer(){
     Column(
@@ -87,11 +124,12 @@ fun VerticalContainer(){
 
 
 @Composable
-fun DummyBox(modifier: Modifier = Modifier){
+fun DummyBox(modifier: Modifier = Modifier, color: Color? = null){
     val red = Random.nextInt(256)
     val green = Random.nextInt(256)
     val blue = Random.nextInt(256)
-    val randomColor = Color(red, green, blue)
+    // color 가 값이 있으면 해당 값을 넣어주고 값이 없다면 랜덤 값을 넣어주기
+    val randomColor = color?.let { it } ?: Color(red, green, blue)
     Box(modifier = modifier
         .size(100.dp)
         .background(randomColor))
@@ -108,7 +146,7 @@ fun DummyBox(modifier: Modifier = Modifier){
 @Composable
 fun DefaultPreview() {
     Compose_fundamental_tutorialTheme {
-        VerticalContainer()
+        BoxContainer()
 //        Container()
 //        Greeting("Android")
     }

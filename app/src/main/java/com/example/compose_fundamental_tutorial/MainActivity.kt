@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
 //                    Greeting("Android")
-                    Container()
+//                    Container()
+                    VerticalContainer()
                 }
             }
         }
@@ -70,6 +71,22 @@ fun Container(){
 
 
 @Composable
+fun VerticalContainer(){
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.End
+    ) {
+        DummyBox()
+        DummyBox()
+        DummyBox()
+    }
+}
+
+
+@Composable
 fun DummyBox(modifier: Modifier = Modifier){
     val red = Random.nextInt(256)
     val green = Random.nextInt(256)
@@ -91,7 +108,8 @@ fun DummyBox(modifier: Modifier = Modifier){
 @Composable
 fun DefaultPreview() {
     Compose_fundamental_tutorialTheme {
-        Container()
+        VerticalContainer()
+//        Container()
 //        Greeting("Android")
     }
 }

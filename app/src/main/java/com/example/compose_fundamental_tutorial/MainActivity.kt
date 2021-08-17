@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.background) {
 //                    Greeting("Android")
 //                    Container()
-                    BoxContainer()
+                    BoxWithConstraintContainer()
                 }
             }
         }
@@ -106,6 +106,53 @@ fun BoxContainer(){
     }
 }
 
+@Composable
+fun BoxWithConstraintContainer(){
+    BoxWithConstraints(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center,
+        propagateMinConstraints = false
+    ) {
+
+        if (this.minHeight > 400.dp){
+            DummyBox(modifier = Modifier.size(200.dp), color = Color.Green)
+        } else {
+            DummyBox(modifier = Modifier.size(200.dp), color = Color.Yellow)
+        }
+        Text(text = "minHeight: ${this.minHeight}")
+//        Column() {
+//            BoxWithConstraintItem(modifier = Modifier
+//                .size(200.dp)
+//                .background(Color.Yellow)
+//            )
+//            BoxWithConstraintItem(modifier = Modifier
+//                .size(300.dp)
+//                .background(Color.Green)
+//            )
+//        }
+
+//        DummyBox(modifier = Modifier.size(200.dp), color = Color.Green)
+//        DummyBox(modifier = Modifier.size(150.dp), color = Color.Yellow)
+//        DummyBox(color = Color.Blue)
+    }
+}
+
+@Composable
+fun BoxWithConstraintItem(modifier: Modifier = Modifier){
+    BoxWithConstraints(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+        propagateMinConstraints = false
+    ) {
+        if (this.minWidth > 200.dp) {
+            Text(text = "이것은 큰 상자이다")
+        } else {
+            Text(text = "이것은 작은 상자이다")
+        }
+    }
+}
 
 @Composable
 fun VerticalContainer(){
@@ -146,7 +193,7 @@ fun DummyBox(modifier: Modifier = Modifier, color: Color? = null){
 @Composable
 fun DefaultPreview() {
     Compose_fundamental_tutorialTheme {
-        BoxContainer()
+        BoxWithConstraintContainer()
 //        Container()
 //        Greeting("Android")
     }

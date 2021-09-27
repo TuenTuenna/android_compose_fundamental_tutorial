@@ -14,8 +14,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +38,10 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,12 +64,123 @@ class MainActivity : ComponentActivity() {
 //                    Greeting("Android")
 //                    Container()
 //                    CheckBoxContainer()
-                    MySnackbar()
+//                    MySnackbar()
+                    TextFieldTest()
                 }
             }
         }
     }
 }
+
+//fun TextField(
+//    value: TextFieldValue,
+//    onValueChange: (TextFieldValue) -> Unit,
+//    modifier: Modifier = Modifier,
+//    enabled: Boolean = true,
+//    readOnly: Boolean = false,
+//    textStyle: TextStyle = LocalTextStyle.current,
+//    label: @Composable (() -> Unit)? = null,
+//    placeholder: @Composable (() -> Unit)? = null,
+//    leadingIcon: @Composable (() -> Unit)? = null,
+//    trailingIcon: @Composable (() -> Unit)? = null,
+//    isError: Boolean = false,
+//    visualTransformation: VisualTransformation = VisualTransformation.None,
+//    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+//    keyboardActions: KeyboardActions = KeyboardActions(),
+//    singleLine: Boolean = false,
+//    maxLines: Int = Int.MAX_VALUE,
+//    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+//    shape: Shape =
+//        MaterialTheme.shapes.small.copy(bottomEnd = ZeroCornerSize, bottomStart = ZeroCornerSize),
+//    colors: TextFieldColors = TextFieldDefaults.textFieldColors()
+//) {
+
+@Composable
+fun TextFieldTest(){
+
+    var userInput by remember { mutableStateOf(TextFieldValue()) }
+
+    var phoneNumberInput by remember { mutableStateOf(TextFieldValue()) }
+
+    var emailInput by remember { mutableStateOf(TextFieldValue()) }
+
+    val shouldShowPassword = remember { mutableStateOf(false) }
+
+    var passwordInput by remember { mutableStateOf(TextFieldValue()) }
+
+    val passwordResource: (Boolean) -> Int = {
+        if(it) {
+            R.drawable.ic_baseline_visibility_24
+        } else {
+            R.drawable.ic_baseline_visibility_off_24
+        }
+    }
+
+    Column(
+        Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = userInput,
+            singleLine = false,
+            maxLines = 2,
+            onValueChange = { newValue -> userInput = newValue },
+            label = { Text("사용자 입력") },
+            placeholder = { Text("작성해 주세요") }
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = phoneNumberInput,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            onValueChange = { newValue -> phoneNumberInput = newValue },
+            label = { Text("전화번호") },
+            placeholder = { Text("010-1234-1234") }
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = emailInput,
+            singleLine = true,
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
+//            trailingIcon = { Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null) },
+            trailingIcon = { IconButton(onClick = { Log.d("TAG", "TextFieldTest: 체크버튼 클릭") }) {
+                                    Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null)
+                                }
+                           },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            onValueChange = { newValue -> emailInput = newValue },
+            label = { Text("이메일 주소") },
+            placeholder = { Text("이메일 주소를 입력해 주세요") }
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = passwordInput,
+            singleLine = true,
+            leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+//            trailingIcon = { Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null) },
+            trailingIcon = { IconButton(onClick = {
+                Log.d("TAG", "TextFieldTest: 비밀번호 visible 버튼 클릭")
+                shouldShowPassword.value = !shouldShowPassword.value
+            }) {
+                    Icon(painter = painterResource(id = passwordResource(shouldShowPassword.value)), contentDescription = null)
+                }
+            },
+            visualTransformation = if (shouldShowPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            onValueChange = { newValue -> passwordInput = newValue },
+            label = { Text("비밀번호") },
+            placeholder = { Text("비밀번호를 입력해주세요") }
+        )
+    }
+}
+
+
 
 @Composable
 fun MySnackbar(){

@@ -14,8 +14,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,11 +38,19 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.compose_fundamental_tutorial.ui.theme.Compose_fundamental_tutorialTheme
 import kotlinx.coroutines.launch
 import kotlin.math.cos
@@ -53,12 +68,289 @@ class MainActivity : ComponentActivity() {
 //                    Greeting("Android")
 //                    Container()
 //                    CheckBoxContainer()
-                    MySnackbar()
+//                    MySnackbar()
+//                    TextFieldTest()
+                    NavigationGraph()
                 }
             }
         }
     }
 }
+
+// 네비게이션 라우트 이넘 (값을 가지는 이넘)
+enum class NAV_ROUTE(val routeName: String, val description: String, val btnColor: Color){
+    MAIN("MAIN", "메인 화면", Color(0xFF3949AB)),
+    LOGIN("LOGIN", "로그인 화면", Color(0xFF5E35B1)),
+    REGISTER("REGISTER", "회원가입 화면", Color(0xFFD81B60)),
+    USER_PROFILE("USER_PROFILE", "유저 프로필 화면", Color(0xFF00897B)),
+    SETTING("SETTING", "설정 화면", Color(0xFFF4511E))
+}
+
+// 네비게이션 라우트 액션
+class RouteAction(navHostController: NavHostController){
+
+    // 특정 라우트로 이동
+    val navTo: (NAV_ROUTE) -> Unit = { route ->
+        navHostController.navigate(route.routeName)
+    }
+
+    // 뒤로가기 이동
+    val goBack: () -> Unit = {
+        navHostController.navigateUp()
+    }
+}
+
+@Composable
+fun NavigationGraph(startRoute: NAV_ROUTE = NAV_ROUTE.MAIN) {
+
+    // 네비게이션 컨트롤러
+    val navController = rememberNavController()
+
+    // 네비게이션 라우트 액션
+    val routeAction = remember(navController) { RouteAction(navController) }
+
+    // NavHost 로 네비게이션 결정
+    // 네비게이션 연결할 녀석들을 설정한다
+    NavHost(navController, startRoute.routeName) {
+
+        // 라우트 이름 = 화면의 키
+        composable(NAV_ROUTE.MAIN.routeName){
+            // 화면 = 값
+            MainScreen(routeAction = routeAction)
+        }
+        // 라우트 이름 = 화면의 키
+        composable(NAV_ROUTE.LOGIN.routeName){
+            // 화면 = 값
+            LoginScreen(routeAction = routeAction)
+        }
+        // 라우트 이름 = 화면의 키
+        composable(NAV_ROUTE.REGISTER.routeName){
+            // 화면 = 값
+            RegisterScreen(routeAction = routeAction)
+        }
+        // 라우트 이름 = 화면의 키
+        composable(NAV_ROUTE.USER_PROFILE.routeName){
+            // 화면 = 값
+            UserProfileScreen(routeAction = routeAction)
+        }
+        // 라우트 이름 = 화면의 키
+        composable(NAV_ROUTE.SETTING.routeName){
+            // 화면 = 값
+            SettingScreen(routeAction = routeAction)
+        }
+    }
+
+}
+
+// 메인 화면
+@Composable
+fun MainScreen(routeAction: RouteAction){
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(Modifier.padding(16.dp)) {
+            NavButton(route = NAV_ROUTE.LOGIN, routeAction = routeAction)
+            NavButton(route = NAV_ROUTE.REGISTER, routeAction = routeAction)
+            NavButton(route = NAV_ROUTE.USER_PROFILE, routeAction = routeAction)
+            NavButton(route = NAV_ROUTE.SETTING, routeAction = routeAction)
+        }
+    }
+}
+
+// 로그인 화면
+@Composable
+fun LoginScreen(routeAction: RouteAction){
+    Surface(Modifier.fillMaxSize()) {
+        Box(Modifier.padding(8.dp), Alignment.Center){
+            Text(text = "로그인 화면", style = TextStyle(Color.Black, 22.sp, FontWeight.Medium))
+            // 뒤로가기 버튼
+            Button(onClick = routeAction.goBack,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .offset(y = 100.dp)) {
+                Text("뒤로가기")
+            }
+        }
+    }
+}
+
+// 회원가입 화면
+@Composable
+fun RegisterScreen(routeAction: RouteAction){
+    Surface(Modifier.fillMaxSize()) {
+        Box(Modifier.padding(8.dp), Alignment.Center){
+            Text(text = "회원가입 화면", style = TextStyle(Color.Black, 22.sp, FontWeight.Medium))
+            // 뒤로가기 버튼
+            Button(onClick = routeAction.goBack,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .offset(y = 100.dp)) {
+                Text("뒤로가기")
+            }
+        }
+    }
+}
+
+// 유저 프로필 화면
+@Composable
+fun UserProfileScreen(routeAction: RouteAction){
+    Surface(Modifier.fillMaxSize()) {
+        Box(Modifier.padding(8.dp), Alignment.Center){
+            Text(text = "유저 프로필 화면", style = TextStyle(Color.Black, 22.sp, FontWeight.Medium))
+            // 뒤로가기 버튼
+            Button(onClick = routeAction.goBack,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .offset(y = 100.dp)) {
+                Text("뒤로가기")
+            }
+        }
+    }
+}
+
+// 설정 화면
+@Composable
+fun SettingScreen(routeAction: RouteAction){
+    Surface(Modifier.fillMaxSize()) {
+        Box(Modifier.padding(8.dp), Alignment.Center){
+            Text(text = "설정 화면", style = TextStyle(Color.Black, 22.sp, FontWeight.Medium))
+            // 뒤로가기 버튼
+            Button(onClick = routeAction.goBack,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .offset(y = 100.dp)) {
+                Text("뒤로가기")
+            }
+        }
+    }
+}
+
+// 콜럼에 있는 네비게이션 버튼
+@Composable
+fun ColumnScope.NavButton(route: NAV_ROUTE, routeAction: RouteAction){
+    Button(onClick = {
+        routeAction.navTo(route)
+    },colors = ButtonDefaults.buttonColors(backgroundColor = route.btnColor),
+        modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+            .fillMaxSize()
+    ) {
+        Text(text = route.description,
+        style = TextStyle(Color.White, 22.sp, FontWeight.Medium)
+        )
+    }
+}
+
+
+
+//fun TextField(
+//    value: TextFieldValue,
+//    onValueChange: (TextFieldValue) -> Unit,
+//    modifier: Modifier = Modifier,
+//    enabled: Boolean = true,
+//    readOnly: Boolean = false,
+//    textStyle: TextStyle = LocalTextStyle.current,
+//    label: @Composable (() -> Unit)? = null,
+//    placeholder: @Composable (() -> Unit)? = null,
+//    leadingIcon: @Composable (() -> Unit)? = null,
+//    trailingIcon: @Composable (() -> Unit)? = null,
+//    isError: Boolean = false,
+//    visualTransformation: VisualTransformation = VisualTransformation.None,
+//    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+//    keyboardActions: KeyboardActions = KeyboardActions(),
+//    singleLine: Boolean = false,
+//    maxLines: Int = Int.MAX_VALUE,
+//    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+//    shape: Shape =
+//        MaterialTheme.shapes.small.copy(bottomEnd = ZeroCornerSize, bottomStart = ZeroCornerSize),
+//    colors: TextFieldColors = TextFieldDefaults.textFieldColors()
+//) {
+
+@Composable
+fun TextFieldTest(){
+
+    var userInput by remember { mutableStateOf(TextFieldValue()) }
+
+    var phoneNumberInput by remember { mutableStateOf(TextFieldValue()) }
+
+    var emailInput by remember { mutableStateOf(TextFieldValue()) }
+
+    val shouldShowPassword = remember { mutableStateOf(false) }
+
+    var passwordInput by remember { mutableStateOf(TextFieldValue()) }
+
+    val passwordResource: (Boolean) -> Int = {
+        if(it) {
+            R.drawable.ic_baseline_visibility_24
+        } else {
+            R.drawable.ic_baseline_visibility_off_24
+        }
+    }
+
+    Column(
+        Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = userInput,
+            singleLine = false,
+            maxLines = 2,
+            onValueChange = { newValue -> userInput = newValue },
+            label = { Text("사용자 입력") },
+            placeholder = { Text("작성해 주세요") }
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = phoneNumberInput,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            onValueChange = { newValue -> phoneNumberInput = newValue },
+            label = { Text("전화번호") },
+            placeholder = { Text("010-1234-1234") }
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = emailInput,
+            singleLine = true,
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
+//            trailingIcon = { Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null) },
+            trailingIcon = { IconButton(onClick = { Log.d("TAG", "TextFieldTest: 체크버튼 클릭") }) {
+                                    Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null)
+                                }
+                           },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            onValueChange = { newValue -> emailInput = newValue },
+            label = { Text("이메일 주소") },
+            placeholder = { Text("이메일 주소를 입력해 주세요") }
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = passwordInput,
+            singleLine = true,
+            leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+//            trailingIcon = { Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null) },
+            trailingIcon = { IconButton(onClick = {
+                Log.d("TAG", "TextFieldTest: 비밀번호 visible 버튼 클릭")
+                shouldShowPassword.value = !shouldShowPassword.value
+            }) {
+                    Icon(painter = painterResource(id = passwordResource(shouldShowPassword.value)), contentDescription = null)
+                }
+            },
+            visualTransformation = if (shouldShowPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            onValueChange = { newValue -> passwordInput = newValue },
+            label = { Text("비밀번호") },
+            placeholder = { Text("비밀번호를 입력해주세요") }
+        )
+    }
+}
+
+
 
 @Composable
 fun MySnackbar(){
